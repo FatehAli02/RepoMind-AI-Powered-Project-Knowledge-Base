@@ -1,0 +1,12 @@
+fastapi[standard]
+uvicorn
+pydantic-settings
+pwdlib[bcrypt]
+pyjwt
+sqlalchemy>=2.0
+psycopg[binary]
+alembic
+pgvector
+sentence-transformers
+groq
+pytest
