@@ -1,7 +1,7 @@
 fastapi[standard]
 uvicorn
 pydantic-settings
-pwdlib[bcrypt]
+pwdlib[argon2]
 pyjwt
 sqlalchemy>=2.0
 psycopg[binary]

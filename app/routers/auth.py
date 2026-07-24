@@ -15,7 +15,7 @@ async def register(user_in: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email Already Registered")
 
     hashed_pwd = hash_password(user_in.password)
-    new_user = User(email=user_in.email, hash_password=hashed_pwd)
+    new_user = User(email=user_in.email, hashed_password=hashed_pwd)
 
     try:
         db.add(new_user)
