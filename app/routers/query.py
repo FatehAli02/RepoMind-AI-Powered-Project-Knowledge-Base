@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from groq import Groq
 
@@ -74,3 +74,24 @@ async def ask_question(
         raise HTTPException(status_code=500, detail="Internal server error")
 
     return new_query
+
+@router.get("/{project_id}/history", response_model=list[QueryResponse])
+async def get_query_history(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    project = db.query(Project).filter(
+        Project.id == project_id,
+        Project.user_id == current_user.id
+    ).first()
+
+    if not project:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found"
+        )
+
+    history = db.query(Query).filter(Query.project_id == project_id).all()
+
+    return history
