@@ -1,4 +1,4 @@
-from sqlalchemy import Text, ForeignKey
+from sqlalchemy import Text, ForeignKey,JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 from typing import TYPE_CHECKING
@@ -14,3 +14,4 @@ class Query(Base):
     question: Mapped[str] = mapped_column(Text, nullable=False)
     answer: Mapped[str] = mapped_column(Text, nullable=False)
     project: Mapped["Project"] = relationship(back_populates="queries")
+    sources: Mapped[list | None] = mapped_column(JSON, nullable=True, default=list)

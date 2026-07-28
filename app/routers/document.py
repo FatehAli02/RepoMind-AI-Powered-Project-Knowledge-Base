@@ -84,7 +84,7 @@ async def delete_document(document_id: int, db: Session = Depends(get_db), curre
     return None
 
 @router.get("/project/{project_id}", response_model=list[DocumentResponse])
-async def display_projects(project_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def display_documents(project_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
 
     if not db.query(Project).filter(Project.id == project_id, Project.user_id == current_user.id).first():
         raise HTTPException(status_code=404, detail="Project Not Found")

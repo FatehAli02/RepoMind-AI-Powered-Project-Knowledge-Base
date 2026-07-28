@@ -34,7 +34,12 @@ async def ask_question(
 
     question_vector = generate_embedding(request.question)
 
-    relevant_chunks = db.query(Chunk).join(Document).filter(Document.project_id == project_id).order_by(Chunk.embedding.cosine_distance(question_vector)).limit(3).all()
+    relevant_chunks = db.query(Chunk).join(Document).filter(Document.project_id == project_id).order_by(Chunk.embedding.cosine_distance(question_vector)).limit(5).all()
+
+    sources_list = [
+    {"filename": chunk.document.title, "snippet": chunk.content[:200]}
+    for chunk in relevant_chunks
+]
 
     if not relevant_chunks:
         answer = "I don't have enough information to answer that. Please upload some documents first."
@@ -42,7 +47,18 @@ async def ask_question(
     else:
         content_text = "\n\n".join([chunk.content for chunk in relevant_chunks])
 
-        system_prompt = f"You are a helpful AI assistant answering questions about a codebase or project. Use ONLY the following context to answer the user's question. If the answer is not in the context, say 'I don't have enough information to answer that.'\n\nContext:\n{content_text}"
+        system_prompt = f"""You are RepoMind, an expert senior developer and AI assistant. 
+Your job is to answer questions about a specific codebase based ONLY on the context provided below.
+
+STRICT RULES:
+1. Use ONLY the provided context to answer the question. 
+2. If the answer cannot be found in the context, do not guess. Say exactly: "I don't have enough information in the provided files to answer that."
+3. Format your response beautifully using Markdown. 
+4. If you write code, always wrap it in proper markdown code blocks with the language specified (e.g., ```python).
+5. Be concise and explain the logic clearly.
+
+Context:
+{content_text}"""
 
         try:
             chat_completion = groq_client.chat.completions.create(
@@ -52,7 +68,7 @@ async def ask_question(
                     {"role" : "user",
                     "content" : request.question}
                 ],
-                model="llama3-8b-8192"
+                model="llama-3.1-8b-instant"
             )
             answer = chat_completion.choices[0].message.content
         except Exception as e:
@@ -61,7 +77,8 @@ async def ask_question(
     new_query = Query(
         project_id= project_id,
         question= request.question,
-        answer= answer
+        answer= answer,
+        sources=sources_list
     )
 
     try: 

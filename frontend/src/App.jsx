@@ -1,19 +1,45 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("access_token");
+  return token ? children : <Navigate to="/auth" replace />;
+}
+
+function PublicRoute({ children }) {
+  const token = localStorage.getItem("access_token");
+  return token ? <Navigate to="/dashboard" replace /> : children;
+}
+
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* The root URL will load the Login page */}
-        <Route path="/" element={<Login />} />
-        
-        {/* The /dashboard URL will load the Dashboard page */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/auth"
+          element={
+            <PublicRoute>
+              <Auth />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        {/* Fallback: send everything else to the right place */}
+        <Route
+          path="*"
+          element={
+            <Navigate to={localStorage.getItem("access_token") ? "/dashboard" : "/auth"} replace />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default App;
