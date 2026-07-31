@@ -5,16 +5,19 @@ def chunk_text(text: str, chunk_size: int = 500, chunk_overlap: int = 50) -> lis
     text_len = len(text)
 
     while(start < text_len):
-        end = start + chunk_size
+        end = min(start + chunk_size, text_len)
 
-        if text_len < end:
+        if end < text_len:
             last_space = text.rfind(' ', start, end)
 
-            if last_space != -1:
+            if last_space > start:
                 end = last_space
 
-        chunks.append(text[start:end].strip())
+        chunk = text[start:end].strip()
+        if chunk:
+            chunks.append(chunk)
 
-        start = end - chunk_overlap
-
+        next_start = end - chunk_overlap
+        start = next_start if next_start > start else end
+        
     return chunks
