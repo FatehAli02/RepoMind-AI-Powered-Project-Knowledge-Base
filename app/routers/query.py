@@ -34,7 +34,7 @@ async def ask_question(
 
     question_vector = generate_embedding(request.question)
 
-    relevant_chunks = db.query(Chunk).join(Document).filter(Document.project_id == project_id).order_by(Chunk.embedding.cosine_distance(question_vector)).limit(5).all()
+    relevant_chunks = db.query(Chunk).join(Document).filter(Document.project_id == project_id).order_by(Chunk.embedding.cosine_distance(question_vector)).limit(4).all()
 
     sources_list = [
     {"filename": chunk.document.title, "snippet": chunk.content[:200]}
