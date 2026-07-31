@@ -8,6 +8,6 @@ sqlalchemy>=2.0
 psycopg[binary]
 alembic
 pgvector
-sentence-transformers
+fastembed
 groq
 pytest
