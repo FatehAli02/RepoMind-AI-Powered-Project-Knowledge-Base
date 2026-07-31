@@ -333,7 +333,17 @@ export default function Dashboard() {
       {/* ---------------- Main workspace ---------------- */}
       <main className="flex-1 flex flex-col min-w-0">
         {!activeProject ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+          <>
+  <div className="md:hidden flex items-center h-14 border-b border-white/[0.06] px-4 shrink-0">
+    <button
+      onClick={() => setSidebarOpen(true)}
+      className="text-[#8B92A0] hover:text-[#E8E8E6]"
+      aria-label="Open menu"
+    >
+      <Menu size={18} />
+    </button>
+  </div>
+  <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
             <div className="w-12 h-12 rounded-lg bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-4">
               <FolderGit2 size={20} className="text-[#5A6070]" />
             </div>
@@ -342,7 +352,7 @@ export default function Dashboard() {
               Choose a project from the sidebar, or create a new one to get
               started.
             </p>
-          </div>
+          </div></>
         ) : (
           <>
             {/* Header */}
