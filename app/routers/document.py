@@ -47,8 +47,11 @@ async def upload_document(
         raise HTTPException(status_code=500, detail="Internal server error")
 
     chunks = chunk_text(text_content)
-
+    import resource
+    print(f"[MEM] before embed batch: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024:.1f} MB", flush=True)
     vectors = generate_embedding_batch(chunks)
+    print(f"[MEM] after embed batch: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024:.1f} MB", flush=True)
+
     chunk_objects = [
         Chunk(document_id=new_doc.id, content=chunk, embedding=vector)
         for chunk, vector in zip(chunks, vectors)

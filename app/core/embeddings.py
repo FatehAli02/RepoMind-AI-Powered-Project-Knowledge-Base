@@ -13,7 +13,7 @@ def generate_embedding(text: str) -> list[float]:
 
     return result.embeddings[0].values
 
-def generate_embedding_batch(text: str) -> list[list[float]]:
+def generate_embedding_batch(text: list[str]) -> list[list[float]]:
     result = client.models.embed_content(
         model="gemini-embedding-001",
         contents=text,
