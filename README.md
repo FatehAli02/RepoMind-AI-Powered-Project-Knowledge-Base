@@ -11,6 +11,9 @@ RepoMind is a Full-Stack Retrieval-Augmented Generation (RAG) application that a
 ## 🎥 Working Demo
 
 
+https://github.com/user-attachments/assets/c096a213-a748-438f-ad0a-4c117a6bc01c
+
+
 ## ✨ Core Features
 
 * **🔐 Secure Authentication**: JWT-based authentication flow with password hashing (`pwdlib[argon2]`) to protect user data and API routes.
