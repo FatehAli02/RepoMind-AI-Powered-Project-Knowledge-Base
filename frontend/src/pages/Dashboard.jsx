@@ -11,6 +11,7 @@ import {
   Loader2,
   FolderGit2,
   UploadCloud,
+  Menu
 } from "lucide-react";
 import { api } from "../lib/api";
 import ConfirmModal from "../components/ConfirmModal";
@@ -44,6 +45,8 @@ export default function Dashboard() {
 
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     loadProjects();
@@ -206,7 +209,7 @@ export default function Dashboard() {
   return (
     <div className="h-screen w-full bg-[#15171C] text-[#E8E8E6] flex overflow-hidden">
       {/* ---------------- Sidebar ---------------- */}
-      <aside className="w-64 shrink-0 bg-[#111319] border-r border-white/[0.06] flex flex-col">
+      <aside className={`fixed md:static inset-y-0 left-0 z-40 w-64 shrink-0 bg-[#111319] border-r border-white/[0.06] flex flex-col transform transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         <div className="flex items-center gap-2.5 px-4 h-14 border-b border-white/[0.06]">
           <div className="w-8 h-8 rounded-lg bg-[#4ADE80]/10 border border-[#4ADE80]/30 flex items-center justify-center">
             <Box size={16} className="text-[#4ADE80]" />
@@ -276,7 +279,9 @@ export default function Dashboard() {
             projects.map((project) => (
               <div
                 key={project.id}
-                onClick={() => setActiveProject(project)}
+                onClick={() => {setActiveProject(project);
+                  setSidebarOpen(false);
+                }}
                 className={`group flex items-center justify-between gap-2 rounded-md px-2.5 py-1.5 cursor-pointer transition-colors ${
                   activeProject?.id === project.id
                     ? "bg-[#1E222B] text-[#E8E8E6]"
@@ -318,6 +323,13 @@ export default function Dashboard() {
         </div>
       </aside>
 
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ---------------- Main workspace ---------------- */}
       <main className="flex-1 flex flex-col min-w-0">
         {!activeProject ? (
@@ -345,12 +357,21 @@ export default function Dashboard() {
                     : `${documents.length} document${documents.length === 1 ? "" : "s"} added`}
                 </p>
               </div>
+              
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="md:hidden text-[#8B92A0] hover:text-[#E8E8E6] mr-3"
+                aria-label="Open menu"
+                >
+                <Menu size={18} />
+                </button>
 
               <button
                 onClick={() => setDocPanelOpen(true)}
                 className="flex items-center gap-1.5 text-sm text-[#8B92A0] hover:text-[#E8E8E6] border border-white/[0.08] hover:border-white/20 rounded-md px-3 py-1.5 transition-colors"
               >
                 <FileText size={14} />
+                <span className="hidden sm:inline">Documents</span>
                 Documents
                 {documents.length > 0 && (
                   <span className="text-xs font-mono bg-white/[0.06] rounded-full px-1.5 py-0.5">
@@ -591,7 +612,7 @@ export default function Dashboard() {
 
       {/* Global error toast */}
       {pageError && (
-        <div className="fixed bottom-5 right-5 max-w-sm bg-[#1B1E25] border border-[#F5A524]/30 rounded-lg px-4 py-3 shadow-lg flex items-start gap-2 z-50">
+        <div className="fixed bottom-5 left-4 right-4 md:left-auto md:right-5 max-w-sm md:mx-0 mx-auto bg-[#1B1E25] border border-[#F5A524]/30 rounded-lg px-4 py-3 shadow-lg flex items-start gap-2 z-50">
           <p className="text-sm text-[#E8E8E6] flex-1">{pageError}</p>
           <button
             onClick={() => setPageError("")}
