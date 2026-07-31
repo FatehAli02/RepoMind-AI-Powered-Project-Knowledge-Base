@@ -382,7 +382,6 @@ export default function Dashboard() {
               >
                 <FileText size={14} />
                 <span className="hidden sm:inline">Documents</span>
-                Documents
                 {documents.length > 0 && (
                   <span className="text-xs font-mono bg-white/[0.06] rounded-full px-1.5 py-0.5">
                     {documents.length}
@@ -540,7 +539,7 @@ export default function Dashboard() {
                   {selectedFile ? selectedFile.name : "Choose a file to add"}
                 </span>
                 <span className="text-xs text-[#5A6070]">
-                  PDF, Markdown, or code files
+                  Markdown, TXT or code files
                 </span>
               </label>
 

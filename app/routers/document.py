@@ -10,7 +10,7 @@ from app.schemas.document import DocumentResponse
 from app.database import get_db
 from app.routers.deps import get_current_user
 from app.core.chunking import chunk_text
-from app.core.embeddings import generate_embedding
+from app.core.embeddings import generate_embedding_batch
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
 
@@ -48,14 +48,12 @@ async def upload_document(
 
     chunks = chunk_text(text_content)
 
-    for chunk in chunks:
-        vector = generate_embedding(chunk)
-        new_chunk = Chunk(
-            document_id= new_doc.id,
-            content= chunk,
-            embedding= vector 
-        )
-        db.add(new_chunk)
+    vectors = generate_embedding_batch(chunks)
+    chunk_objects = [
+        Chunk(document_id=new_doc.id, content=chunk, embedding=vector)
+        for chunk, vector in zip(chunks, vectors)
+    ]
+    db.add_all(chunk_objects)
 
     db.commit()
 
