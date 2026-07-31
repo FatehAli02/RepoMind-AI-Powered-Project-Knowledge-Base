@@ -46,19 +46,22 @@ async def upload_document(
         db.rollback()
         raise HTTPException(status_code=500, detail="Internal server error")
 
-    chunks = chunk_text(text_content)
-    import resource
-    print(f"[MEM] before embed batch: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024:.1f} MB", flush=True)
-    vectors = generate_embedding_batch(chunks)
-    print(f"[MEM] after embed batch: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024:.1f} MB", flush=True)
+    try:
+        chunks = chunk_text(text_content)
 
-    chunk_objects = [
-        Chunk(document_id=new_doc.id, content=chunk, embedding=vector)
-        for chunk, vector in zip(chunks, vectors)
-    ]
-    db.add_all(chunk_objects)
+        vectors = generate_embedding_batch(chunks)
 
-    db.commit()
+        chunk_objects = [
+            Chunk(document_id=new_doc.id, content=chunk, embedding=vector)
+            for chunk, vector in zip(chunks, vectors)
+        ]
+        db.add_all(chunk_objects)
+
+        db.commit()
+    except HTTPException:
+        db.delete(new_doc)
+        db.commit()
+        raise
 
     return new_doc
 
